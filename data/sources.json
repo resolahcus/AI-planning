@@ -1,0 +1,82 @@
+{
+  "sources": [
+    {
+      "id": "115-1-1",
+      "year": 115,
+      "round": 1,
+      "subject": 1,
+      "title": "115 年第一次初級 AI 應用規劃師｜第一科 人工智慧基礎概論",
+      "file": "sources/115-r1-s1.pdf",
+      "originalFilename": "115年第一次初級AI應用規劃師_第一科_人工智慧基礎概論_公告試題_20260410164304.pdf",
+      "sha256": "fbba96cf077905166b1dda19310f6da236712cefaa465c8c73155d85dcab260c",
+      "pages": 12,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    },
+    {
+      "id": "115-1-2",
+      "year": 115,
+      "round": 1,
+      "subject": 2,
+      "title": "115 年第一次初級 AI 應用規劃師｜第二科 生成式 AI 應用與規劃",
+      "file": "sources/115-r1-s2.pdf",
+      "originalFilename": "115年第一次初級AI應用規劃師_第二科_生成式AI應用與規劃_公告試題_20260410164328.pdf",
+      "sha256": "b5b26f049ae187f8921b4f2639725e7a8f18eedcf2459344416aa647b5b232b2",
+      "pages": 11,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    },
+    {
+      "id": "115-2-1",
+      "year": 115,
+      "round": 2,
+      "subject": 1,
+      "title": "115 年第二次初級 AI 應用規劃師｜第一科 人工智慧基礎概論",
+      "file": "sources/115-r2-s1.pdf",
+      "originalFilename": "115年第二次初級AI應用規劃師_第一科_人工智慧基礎概論_公告試題_20260604212644.pdf",
+      "sha256": "912d2fdc3a605dade66463193432c8d70d9bccef348cba87583f873162b83100",
+      "pages": 13,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    },
+    {
+      "id": "115-2-2",
+      "year": 115,
+      "round": 2,
+      "subject": 2,
+      "title": "115 年第二次初級 AI 應用規劃師｜第二科 生成式 AI 應用與規劃",
+      "file": "sources/115-r2-s2.pdf",
+      "originalFilename": "115年第二次初級AI應用規劃師_第二科_生成式AI應用與規劃_公告試題_20260604212719.pdf",
+      "sha256": "765af6acdb722b7a3f3382eff4b8b9e5d522dce4bfb7b8364aa8d2a3e67373e8",
+      "pages": 13,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    },
+    {
+      "id": "115-3-1",
+      "year": 115,
+      "round": 3,
+      "subject": 1,
+      "title": "115 年第三次初級 AI 應用規劃師｜第一科 人工智慧基礎概論",
+      "file": "sources/115-r3-s1.pdf",
+      "originalFilename": "115年第三次初級AI應用規劃師_第一科_人工智慧基礎概論_公告試題_20260906220418.pdf",
+      "sha256": "c6d11084c73e9f9b1edff5a802465135d66a6da14cc3d3ed6fe80525b8a0cc3d",
+      "pages": 15,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    },
+    {
+      "id": "115-3-2",
+      "year": 115,
+      "round": 3,
+      "subject": 2,
+      "title": "115 年第三次初級 AI 應用規劃師｜第二科 生成式 AI 應用與規劃",
+      "file": "sources/115-r3-s2.pdf",
+      "originalFilename": "115年第三次初級AI應用規劃師_第二科_生成式AI應用與規劃_公告試題_20260906220452.pdf",
+      "sha256": "ecbee5c656f63bd42f17ad094193760bf1b3273c3b4e5ca33db0ebb955591b5c",
+      "pages": 16,
+      "questionCount": 50,
+      "answerSource": "使用者提供之公告試題 PDF 左側「答案」欄；依原檔抄錄，未另行推論或生成答案。"
+    }
+  ]
+}
