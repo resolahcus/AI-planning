@@ -50,10 +50,21 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     await overflow(page); await screenshot(page, 'desktop-home.png');
     record('Desktop home, 300-question stats, offline readiness');
     await page.goto(url + '/#practice'); await page.locator('[data-action="single"][data-id="115-1-1-001"]').click();
+    assert.equal(await page.locator('[data-action="check"]').count(),0);
     await page.locator('[data-action="answer"][data-key="A"]').click();
-    await page.keyboard.press('Enter'); await page.locator('.feedback.incorrect').waitFor();
-    assert.equal((await getState(page)).records['115-1-1-001'].lastCorrect,false);
-    record('Keyboard answer confirmation and wrong-answer recording');
+    await page.locator('.feedback.incorrect').waitFor();
+    const instantAnswer = await getState(page);
+    assert.equal(instantAnswer.records['115-1-1-001'].lastCorrect,false);
+    assert.equal(instantAnswer.records['115-1-1-001'].attempts,1);
+    assert.equal(instantAnswer.activeSession.checked['115-1-1-001'],true);
+    assert.equal(await page.locator('[data-action="check"]').count(),0);
+    assert.equal(await page.locator('[data-action="answer"]:disabled').count(),4);
+    await page.keyboard.press('4');
+    await page.locator('[data-action="answer"][data-key="A"]').dispatchEvent('click');
+    const repeatedAnswer = await getState(page);
+    assert.equal(repeatedAnswer.activeSession.answers['115-1-1-001'],'A');
+    assert.equal(repeatedAnswer.records['115-1-1-001'].attempts,1);
+    record('Practice click immediately reveals and records answer once without confirmation');
     await page.locator('[data-action="favorite"]').click();
     await page.locator('.note-section summary').click();
     await page.locator('#question-note').fill('資料整合重點 <img src=x onerror=alert(1)>');
@@ -64,7 +75,7 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     record('Reload preserves session, notes, favorites; note HTML escaped; no double count');
     await endSession(page);
     await page.goto(url + '/#wrong'); await page.locator('[data-action="single"][data-id="115-1-1-001"]').click();
-    await page.locator('[data-action="answer"][data-key="D"]').click(); await page.locator('[data-action="check"]').click();
+    await page.locator('[data-action="answer"][data-key="D"]').click(); await page.locator('.feedback:not(.incorrect)').waitFor();
     await endSession(page); await page.goto(url + '/#wrong'); await page.getByRole('heading',{name:'目前沒有待複習的錯題'}).waitFor();
     record('Correct retry removes wrong question and retains lifetime history');
     await page.goto(url + '/#home'); await page.locator('[data-action="setup"][data-mode="exam"]').click();
@@ -72,12 +83,18 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     await page.locator('[name="count"]').selectOption('10'); await page.locator('.setup-advanced summary').click(); await page.locator('[name="shuffle"]').selectOption('false');
     await page.locator('#setup-form [type="submit"]').click(); await page.locator('.quiz-question').waitFor();
     const bank = JSON.parse(await fs.readFile(path.join(root,'data/questions.json'),'utf8')).questions;
+    const recordsBeforeExam = (await getState(page)).records;
     await page.locator('[data-action="answer"][data-key="D"]').click();
     await page.locator('[data-action="answer"][data-key="A"]').click();
     assert.equal(await page.locator('.feedback').count(),0);
+    const editedExam = await getState(page);
+    assert.equal(editedExam.activeSession.answers['115-1-1-001'],'A');
+    assert.deepEqual(editedExam.activeSession.checked,{});
+    assert.deepEqual(editedExam.records,recordsBeforeExam);
     await page.locator('[data-action="move"][data-delta="1"]').click();
     await page.locator(`[data-action="answer"][data-key="${bank[1].answer}"]`).click();
     const before = await getState(page);
+    assert.deepEqual(before.records,recordsBeforeExam);
     await page.reload(); await page.locator('.quiz-question').waitFor();
     assert.equal((await getState(page)).activeSession.deadline,before.activeSession.deadline);
     await endSession(page); const exam = (await getState(page)).history[0];
@@ -113,7 +130,7 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     await waitForDarkOptions(page);
     await screenshot(page, 'mobile-dark.png');
     await context.setOffline(true); await page.reload(); await page.locator('.quiz-question').waitFor();
-    await page.locator('[data-action="answer"]').first().click(); await page.locator('[data-action="check"]').click();
+    await page.locator('[data-action="answer"]').first().click();
     await page.locator('.feedback').waitFor();
     assert.match(await page.locator('#connection').textContent(),/離線/);
     record('Offline reload and answer submission retain full question bank');
@@ -121,6 +138,28 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     await page.evaluate(k=>{const s=JSON.parse(localStorage.getItem(k));s.activeSession.mode='exam';s.activeSession.deadline=Date.now()-1000;s.activeSession.checked={};localStorage.setItem(k,JSON.stringify(s));},key);
     await page.reload(); await page.locator('.result-hero').waitFor(); assert.equal((await getState(page)).activeSession,null);
     record('Expired exam auto-submits on reload');
+    await page.goto(url + '/#home'); await page.locator('[data-action="setup"][data-mode="exam"]').click();
+    await page.locator('[name="subject"]').selectOption('1'); await page.locator('[name="round"]').selectOption('1');
+    await page.locator('[name="count"]').selectOption('10'); await page.locator('[name="mode"]').selectOption('practice');
+    await page.locator('.setup-advanced summary').click(); await page.locator('[name="shuffle"]').selectOption('false');
+    await page.locator('#setup-form [type="submit"]').click(); await page.locator('.quiz-question').waitFor();
+    for (let index = 0; index < 4; index++) {
+      const prior = await getState(page);
+      const questionId = prior.activeSession.questionIds[index];
+      const attempts = prior.records[questionId]?.attempts || 0;
+      await page.keyboard.press(String(index + 1)); await page.locator('.feedback').waitFor();
+      const answered = await getState(page);
+      assert.equal(answered.activeSession.answers[questionId],'ABCD'[index]);
+      assert.equal(answered.activeSession.checked[questionId],true);
+      assert.equal(answered.records[questionId].attempts,attempts + 1);
+      assert.equal(await page.locator('[data-action="check"]').count(),0);
+      await page.keyboard.press(String(index + 1));
+      assert.equal((await getState(page)).records[questionId].attempts,attempts + 1);
+      await page.keyboard.press('Enter');
+      assert.equal((await getState(page)).activeSession.currentIndex,index + 1);
+      assert.equal(await page.locator('.feedback').count(),0);
+    }
+    record('Keys 1-4 immediately score once and Enter advances to the next question');
     assert.deepEqual(errors,[]); record('No uncaught browser errors');
     await fs.writeFile(path.join(artifacts,'browser-qa.json'),JSON.stringify({url,passed:checks.length,checks,errors},null,2));
   } catch(error) {
@@ -134,7 +173,7 @@ async function endSession(page) { await page.locator('[data-action="finish"]').l
     const page = await webkit.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
     await page.goto(url); await page.locator('.subjects').waitFor(); await overflow(page);
     await page.locator('[data-action="quick"]').click(); await page.locator('.quiz-question').waitFor();
-    await page.locator('[data-action="answer"]').first().click(); await page.locator('[data-action="check"]').click(); await page.locator('.feedback').waitFor(); await overflow(page);
+    await page.locator('[data-action="answer"]').first().click(); await page.locator('.feedback').waitFor(); await overflow(page);
     await screenshot(page, 'webkit-mobile.png'); record('WebKit mobile layout and answer flow');
   } finally { await webkit.close(); }
   await fs.writeFile(path.join(artifacts,'browser-qa.json'),JSON.stringify({url,passed:checks.length,checks,errors},null,2));

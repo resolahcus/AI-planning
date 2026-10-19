@@ -260,8 +260,8 @@ export function startSession(questions, options = {}, now = Date.now()) {
 }
 
 /**
- * Count one deliberately submitted answer. The caller records a practice question only
- * on its first check in a session; changing a selection alone must not call this function.
+ * Count one submitted answer. Practice records its first selection in a session;
+ * exam selection changes are recorded only when the session is submitted.
  * @param {State} state @param {Question} question @param {AnswerKey} answer @param {number} [now]
  * @returns {State}
  */
@@ -299,7 +299,7 @@ export function finishSession(state, session, questions, now = Date.now()) {
   for (const id of questionIds) {
     const question = questionMap.get(id);
     const answer = session.answers[id];
-    // A selected practice option is an answer only after the user checks it.
+    // Legacy unchecked selections remain unanswered until explicitly selected again.
     if (!isAnswer(answer) || (session.mode === 'practice' && session.checked[id] !== true)) continue;
     answers[id] = answer;
     if (answer === question.answer) correct++;

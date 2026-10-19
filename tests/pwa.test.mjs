@@ -39,7 +39,7 @@ async function workerHarness() {
   };
   vm.runInNewContext(await readFile(join(ROOT, 'sw.js'), 'utf8'), {
     self, URL, Request,
-    caches: { async open() { return cache; }, async keys() { return ['ai-study-115-v3']; } },
+    caches: { async open() { return cache; }, async keys() { return ['ai-study-115-v4']; } },
     async fetch(request) {
       state.fetched.push(request.url);
       return state.response || { ok: true, type: 'basic', redirected: false, clone() { return this; } };

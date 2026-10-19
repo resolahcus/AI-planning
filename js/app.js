@@ -202,7 +202,7 @@ function begin(items, options) {
     if (!state.activeSession) { toast('目前沒有可以練習的題目。'); return; }
     persist(); modal.close(); goto('quiz');
   };
-  if (state.activeSession) confirmAction('開始新的練習？', '目前回合將被取代。已確認的練習紀錄、收藏與筆記會保留；未交卷的模擬測驗不會計分。', run, '開始新回合');
+  if (state.activeSession) confirmAction('開始新的練習？', '目前回合將被取代。已作答的練習紀錄、收藏與筆記會保留；未交卷的模擬測驗不會計分。', run, '開始新回合');
   else run();
 }
 function currentQuestion() { return questionMap.get(state.activeSession?.questionIds[state.activeSession.currentIndex]); }
@@ -226,18 +226,25 @@ function renderQuiz() {
         <div class="quiz-meta"><span>115 年${ROUNDS[q.round]} · 第${q.subject === 1 ? '一' : '二'}科 · 原題 ${q.number}</span><div class="question-tools"><button class="icon-button ${state.favorites.includes(q.id) ? 'active' : ''}" data-action="favorite" data-id="${q.id}" aria-pressed="${state.favorites.includes(q.id)}" aria-label="${state.favorites.includes(q.id) ? '取消收藏' : '收藏這一題'}" title="${state.favorites.includes(q.id) ? '取消收藏' : '收藏這一題'}">${icon('bookmark')}</button></div></div>
         <h1 class="quiz-question" id="question-heading">${esc(q.stem)}</h1>
         <div class="options" role="group" aria-labelledby="question-heading">${q.options.map(option => `<button class="option ${answer === option.key ? 'selected' : ''} ${checked && option.key === q.answer ? 'correct' : checked && answer === option.key ? 'incorrect' : ''}" data-action="answer" data-key="${option.key}" aria-pressed="${answer === option.key}" ${checked ? 'disabled' : ''}><span class="option-key">${option.key}</span><span class="option-text">${esc(option.text)}</span>${checked && (option.key === q.answer || option.key === answer) ? `<span class="option-indicator">${icon(option.key === q.answer ? 'check' : 'cross')}</span>` : ''}</button>`).join('')}</div>
-        <div aria-live="polite" id="answer-feedback">${checked ? `<div class="feedback ${correct ? '' : 'incorrect'}"><strong>${icon(correct ? 'check' : 'repeat')}${correct ? '答對了' : `公告答案：${q.answer}`}</strong><p>依原公告答案，來源未附解析。</p>${sourceLink(q)}</div>` : ''}</div>
-        <div class="quiz-actions"><button class="button ghost" data-action="move" data-delta="-1" ${s.currentIndex === 0 ? 'disabled' : ''}>${icon('back')} 上一題</button><div class="right">${s.mode === 'practice' && !checked ? `<button class="button primary" data-action="check" ${!answer ? 'disabled' : ''}>確認答案</button>` : ''}${s.currentIndex < s.questionIds.length - 1 ? `<button class="button ${checked || s.mode === 'exam' ? 'primary' : 'ghost'}" data-action="move" data-delta="1">${!checked && s.mode === 'practice' ? '跳過' : '下一題'} ${icon('arrow')}</button>` : `<button class="button ${checked || s.mode === 'exam' ? 'primary' : 'ghost'}" data-action="finish">${s.mode === 'exam' ? '交卷' : '完成'} ${icon('check')}</button>`}</div></div>
+        <div aria-live="polite" id="answer-feedback" tabindex="-1">${checked ? `<div class="feedback ${correct ? '' : 'incorrect'}"><strong>${icon(correct ? 'check' : 'repeat')}${correct ? '答對了' : `公告答案：${q.answer}`}</strong><p>依原公告答案，來源未附解析。</p>${sourceLink(q)}</div>` : ''}</div>
+        <div class="quiz-actions"><button class="button ghost" data-action="move" data-delta="-1" ${s.currentIndex === 0 ? 'disabled' : ''}>${icon('back')} 上一題</button><div class="right">${s.currentIndex < s.questionIds.length - 1 ? `<button class="button ${checked || s.mode === 'exam' ? 'primary' : 'ghost'}" data-action="move" data-delta="1">${!checked && s.mode === 'practice' ? '跳過' : '下一題'} ${icon('arrow')}</button>` : `<button class="button ${checked || s.mode === 'exam' ? 'primary' : 'ghost'}" data-action="finish">${s.mode === 'exam' ? '交卷' : '完成'} ${icon('check')}</button>`}</div></div>
         <details class="note-section" ${state.notes[q.id] ? 'open' : ''}><summary>筆記${state.notes[q.id] ? ' · 已儲存' : ''}</summary><label class="sr-only" for="question-note">本題學習筆記</label><textarea id="question-note" maxlength="8000" placeholder="寫下這一題的重點…" data-id="${q.id}">${esc(state.notes[q.id] || '')}</textarea><small>自動儲存在目前裝置，最多 8,000 字。</small></details>
       </section>
-      <div class="quiz-footer"><details class="quiz-navigator"><summary>題號與進度 <span>${completed} / ${s.questionIds.length} 已答</span></summary><div class="number-grid">${s.questionIds.map((id, i) => `<button class="number-cell ${s.currentIndex === i ? 'current' : ''} ${s.mode === 'practice' && s.checked[id] ? s.answers[id] === questionMap.get(id).answer ? 'correct' : 'incorrect' : s.answers[id] ? 'answered' : ''}" data-action="jump" data-index="${i}" aria-label="跳至第 ${i + 1} 題${s.checked[id] ? '，已確認' : s.answers[id] ? '，已選答案' : '，未作答'}" ${s.currentIndex === i ? 'aria-current="step"' : ''}>${i + 1}</button>`).join('')}</div></details><button class="text-button" data-action="finish">${s.mode === 'exam' ? '交卷' : '結束練習'}</button></div>
+      <div class="quiz-footer"><details class="quiz-navigator"><summary>題號與進度 <span>${completed} / ${s.questionIds.length} 已答</span></summary><div class="number-grid">${s.questionIds.map((id, i) => `<button class="number-cell ${s.currentIndex === i ? 'current' : ''} ${s.mode === 'practice' && s.checked[id] ? s.answers[id] === questionMap.get(id).answer ? 'correct' : 'incorrect' : s.answers[id] ? 'answered' : ''}" data-action="jump" data-index="${i}" aria-label="跳至第 ${i + 1} 題${s.checked[id] ? '，已作答' : s.answers[id] ? '，已選答案' : '，未作答'}" ${s.currentIndex === i ? 'aria-current="step"' : ''}>${i + 1}</button>`).join('')}</div></details><button class="text-button" data-action="finish">${s.mode === 'exam' ? '交卷' : '結束練習'}</button></div>
     </div>`;
 }
-function checkAnswer() {
+function selectAnswer(key) {
   const s = state.activeSession; const q = currentQuestion();
-  if (!s || !q || s.mode !== 'practice' || s.checked[q.id] || !s.answers[q.id]) return;
-  recordAnswer(state, q, s.answers[q.id]); s.checked[q.id] = true; persist(); renderQuiz(); renderNavigation();
-  $('#answer-feedback').focus?.({ preventScroll: true });
+  if (!s || !q || s.checked[q.id] || !q.options.some(option => option.key === key)) return;
+  s.answers[q.id] = key;
+  if (s.mode === 'practice') {
+    // Commit the choice and its result together, once per question in this session.
+    recordAnswer(state, q, key);
+    s.checked[q.id] = true;
+  }
+  persist(); renderQuiz(); renderNavigation(); updateTimer();
+  const focusTarget = s.mode === 'practice' ? $('#answer-feedback') : document.querySelector(`[data-action="answer"][data-key="${key}"]`);
+  focusTarget?.focus({ preventScroll: true });
 }
 function moveQuestion(index) {
   const s = state.activeSession; if (!s) return;
@@ -253,7 +260,7 @@ function completeSession(automatic = false) {
     if (automatic) toast('測驗時間已到，已自動交卷並保存結果。', 6000);
   };
   if (automatic) run();
-  else confirmAction(s.mode === 'exam' ? '準備交卷？' : '結束這回合練習？', `已完成 ${answered} / ${s.questionIds.length} 題。${answered < s.questionIds.length ? `還有 ${s.questionIds.length - answered} 題未${s.mode === 'practice' ? '確認答案' : '作答'}，本次結果將列為未答。` : '完成後可以查看逐題結果與公告答案。'}`, run, s.mode === 'exam' ? '確認交卷' : '查看結果');
+  else confirmAction(s.mode === 'exam' ? '準備交卷？' : '結束這回合練習？', `已完成 ${answered} / ${s.questionIds.length} 題。${answered < s.questionIds.length ? `還有 ${s.questionIds.length - answered} 題未作答，本次結果將列為未答。` : '完成後可以查看逐題結果與公告答案。'}`, run, s.mode === 'exam' ? '確認交卷' : '查看結果');
 }
 function updateTimer() {
   const s = state.activeSession; if (!s || s.mode !== 'exam') return;
@@ -312,8 +319,7 @@ document.addEventListener('click', async (event) => {
     case 'resume': goto('quiz'); break;
     case 'leave': persist(); goto('home'); break;
     case 'single': begin([questionMap.get(data.id)], { mode: 'practice', count: 'all', shuffle: false }); break;
-    case 'answer': if (s && !s.checked[currentQuestion().id]) { s.answers[currentQuestion().id] = data.key; persist(); renderQuiz(); updateTimer(); document.querySelector(`[data-action="answer"][data-key="${data.key}"]`)?.focus({ preventScroll: true }); } break;
-    case 'check': checkAnswer(); break;
+    case 'answer': selectAnswer(data.key); break;
     case 'move': if (s) moveQuestion(s.currentIndex + Number(data.delta)); break;
     case 'jump': moveQuestion(Number(data.index)); break;
     case 'finish': completeSession(); break;
@@ -369,8 +375,9 @@ document.addEventListener('change', event => {
 document.addEventListener('keydown', event => {
   if (route !== 'quiz' || modal.open || event.altKey || event.ctrlKey || event.metaKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
   if (event.target.tagName === 'BUTTON' && event.target.dataset.action !== 'answer') return;
+  if (event.target.dataset.action === 'answer' && event.key === 'Enter' && state.activeSession?.mode === 'practice') return;
   if (/^[1-4]$/.test(event.key)) { event.preventDefault(); document.querySelector(`[data-action="answer"][data-key="${'ABCD'[Number(event.key) - 1]}"]`)?.click(); }
-  else if (event.key === 'Enter') { event.preventDefault(); if (state.activeSession?.mode === 'practice' && !state.activeSession.checked[currentQuestion().id]) checkAnswer(); else if (state.activeSession.currentIndex < state.activeSession.questionIds.length - 1) moveQuestion(state.activeSession.currentIndex + 1); }
+  else if (event.key === 'Enter') { event.preventDefault(); const s = state.activeSession; if (s && (s.mode === 'exam' || s.checked[currentQuestion().id]) && s.currentIndex < s.questionIds.length - 1) moveQuestion(s.currentIndex + 1); }
   else if (['ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); moveQuestion(state.activeSession.currentIndex + (event.key === 'ArrowLeft' ? -1 : 1)); }
 });
 window.addEventListener('hashchange', () => { listPage = 1; render(true); });

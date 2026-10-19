@@ -1,5 +1,5 @@
 /* Bump this version whenever app files or question data change. */
-const CACHE_NAME = 'ai-study-115-v3';
+const CACHE_NAME = 'ai-study-115-v4';
 const CACHE_PREFIX = 'ai-study-115-';
 const SCOPE = new URL(self.registration.scope);
 const PRECACHE_PATHS = [
