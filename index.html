@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="115 年初級 AI 應用規劃師，兩科三場共 300 題公告試題。隨時刷題、錯題複習、模擬測驗，支援離線與手機安裝。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="color-scheme" content="light dark">
+  <title>AI 學習所 · 初級 AI 應用規劃師</title>
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./js/app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <div class="workspace">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="AI 學習所首頁"><span class="brand-mark" aria-hidden="true">ai</span><span>AI 學習所</span></a>
+      <nav id="navigation" aria-label="主要導覽"></nav>
+      <span id="page-label" class="sr-only">首頁</span>
+      <div class="topbar-actions">
+        <button class="icon-button" id="theme-button" data-action="theme" aria-label="切換深色模式" title="切換深色模式"></button>
+        <a class="icon-button" href="#settings" data-nav="settings" aria-label="設定與備份" title="設定與備份"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></svg></a>
+      </div>
+    </header>
+    <div id="update-banner" class="update-banner" hidden>新版本已準備完成。<button data-action="update">儲存進度並更新</button></div>
+    <main id="main" tabindex="-1"><div class="loading"><h1>正在載入題庫</h1><p>稍後即可開始練習。</p></div></main>
+    <footer class="main-footer"><button class="text-button" data-action="sources">題庫來源</button><span id="connection" class="connection" role="status"><i aria-hidden="true"></i>正在準備題庫</span></footer>
+  </div>
+  <nav class="mobile-nav" id="mobile-navigation" aria-label="手機主要導覽"></nav>
+  <dialog id="modal" aria-labelledby="dialog-title"><div id="modal-content"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><div class="noscript">此刷題網站需要啟用 JavaScript，才能載入題庫與保存學習進度。</div></noscript>
+</body>
+</html>

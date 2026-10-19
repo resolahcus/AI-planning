@@ -1,0 +1,14 @@
+{
+  "name": "ai-planning-study",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "115 年初級 AI 應用規劃師公告試題練習 PWA",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check js/app.js && node --check js/engine.js && node --check js/pwa.js && node --check sw.js"
+  }
+}

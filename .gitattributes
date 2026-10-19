@@ -1,0 +1,12 @@
+* text=auto
+*.js text eol=lf
+*.mjs text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.webmanifest text eol=lf
+*.md text eol=lf
+*.pdf binary
+*.png binary
+*.cjs text eol=lf
+*.yml text eol=lf

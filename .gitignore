@@ -1,0 +1,9 @@
+dist/
+node_modules/
+.vercel/
+.openai/
+work/
+test-results/
+*.log
+.DS_Store
+.env*
